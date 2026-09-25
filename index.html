@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AyudaCerca — Prototipo</title>
+<style>
+  :root{
+    --blue:#2563eb; --blue2:#dbeafe; --green:#059669; --green2:#d1fae5;
+    --yellow:#f59e0b; --red:#dc2626; --ink:#172033; --muted:#667085;
+    --bg:#f4f7fb; --white:#fff; --line:#dbe2ee;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+  body.easy{font-size:19px}
+  header{
+    position:sticky;top:0;z-index:20;background:var(--blue);color:#fff;
+    padding:16px 6%;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 3px 14px #0002
+  }
+  .logo{font-weight:900;font-size:1.55rem}
+  nav{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+  nav button{background:transparent;color:#fff;border:0;font-weight:700;cursor:pointer;padding:9px;border-radius:9px}
+  nav button:hover{background:#ffffff22}
+  .easy-toggle{background:#fff!important;color:var(--blue)!important}
+  main{max-width:1150px;margin:auto;padding:30px 20px 70px}
+  .hero,.card,.panel{
+    background:var(--white);border-radius:22px;box-shadow:0 7px 28px #1f293714
+  }
+  .hero{padding:45px 28px;text-align:center}
+  .hero h1{font-size:clamp(2.1rem,6vw,3.7rem);margin:0 0 12px}
+  .hero p{max-width:750px;margin:0 auto 25px;line-height:1.6;color:var(--muted)}
+  .buttons{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+  .btn{
+    border:0;border-radius:14px;padding:14px 20px;font-size:1rem;
+    font-weight:800;cursor:pointer;transition:.15s
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .primary{background:var(--blue);color:#fff}.green{background:var(--green);color:#fff}
+  .soft{background:var(--blue2);color:#1d4ed8}.danger{background:#fee2e2;color:#b91c1c}
+  .big-btn{min-width:240px;min-height:76px;font-size:1.15rem}
+  .section{margin-top:30px}
+  .section h2{margin-bottom:5px}.section>p{color:var(--muted)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:18px}
+  .card{padding:21px}
+  .icon{font-size:2.2rem}.muted{color:var(--muted);line-height:1.55}
+  .tag{display:inline-block;background:#eef2ff;color:#3730a3;padding:6px 10px;border-radius:999px;font-size:.82rem;font-weight:800}
+  .help-top{display:flex;justify-content:space-between;gap:12px}.points{background:#fff7d6;color:#8a6200;padding:6px 10px;border-radius:999px;font-weight:800;height:max-content}
+  .help-card{display:flex;flex-direction:column;gap:12px}
+  .help-card h3{margin:8px 0}
+  .stat{text-align:center;background:#f7f9fc;border-radius:16px;padding:18px}
+  .stat strong{display:block;font-size:1.8rem;color:var(--blue);margin-bottom:4px}
+  .access{
+    background:linear-gradient(135deg,#eff6ff,#ecfdf5);border:1px solid #bfdbfe;
+    border-radius:22px;padding:25px
+  }
+  .access-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px;margin-top:16px}
+  .access-card{background:#fff;border-radius:17px;padding:19px;border:1px solid var(--line)}
+  .access-card h3{margin:9px 0}.access-card p{color:var(--muted);line-height:1.45}
+  .modal{position:fixed;inset:0;background:#0f172a99;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+  .modal.show{display:flex}
+  .modal-box{background:#fff;border-radius:22px;width:min(650px,100%);max-height:92vh;overflow:auto;padding:25px}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;gap:15px}
+  .close{border:0;background:#eef2f7;border-radius:10px;padding:9px 12px;cursor:pointer}
+  label{display:block;font-weight:800;margin:15px 0 7px}
+  input,select,textarea{width:100%;padding:13px;border:1px solid var(--line);border-radius:11px;font:inherit}
+  textarea{min-height:100px;resize:vertical}
+  .notice{display:none;margin-top:14px;padding:12px;border-radius:12px;background:var(--green2);color:#047857;font-weight:700}
+  .notice.show{display:block}
+  .voice-box{background:#f8fafc;border-radius:16px;padding:18px;margin-top:15px}
+  .mic{font-size:3rem;display:block;text-align:center}
+  .voice-result{min-height:55px;border:2px dashed #cbd5e1;border-radius:13px;padding:14px;margin-top:12px;color:var(--muted)}
+  .tutorial{border-left:5px solid var(--blue);background:#f8fafc;padding:15px 18px;border-radius:10px;margin:12px 0}
+  .progress{height:13px;background:#e5e7eb;border-radius:99px;overflow:hidden}.bar{height:100%;background:var(--blue);width:0;transition:.4s}
+  footer{text-align:center;color:var(--muted);padding:30px}
+  .hidden{display:none!important}
+  body.easy header{padding:20px 6%}
+  body.easy .btn{font-size:1.12rem;padding:17px 22px}
+  body.easy input,body.easy select,body.easy textarea{font-size:1.1rem;padding:16px}
+  body.easy .card{padding:25px}
+  @media(max-width:700px){
+    header{align-items:flex-start;gap:10px;flex-direction:column}
+    nav{width:100%}
+    nav button{flex:1}
+    .hero{padding:32px 18px}
+  }
+
+  /* Pantalla de selección inicial */
+  #startScreen{
+    position:fixed; inset:0; z-index:1000; background:#f4f7fb;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+  }
+  #startScreen.hidden{display:none}
+  .start-box{
+    width:min(900px,100%); background:#fff; border-radius:28px;
+    padding:42px 28px; text-align:center; box-shadow:0 12px 45px #1f29371c;
+  }
+  .start-logo{font-size:2rem;font-weight:900;color:#2563eb;margin-bottom:18px}
+  .start-box h1{font-size:clamp(2rem,5vw,3rem);margin:0 0 12px}
+  .start-box>p{color:#667085;max-width:650px;margin:0 auto 30px;line-height:1.6}
+  .choice-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:760px;margin:auto}
+  .choice{
+    border:3px solid #dbe2ee;background:#fff;border-radius:22px;
+    padding:28px 20px;cursor:pointer;min-height:220px;
+    transition:.15s;font:inherit;color:#172033;
+  }
+  .choice:hover{border-color:#2563eb;transform:translateY(-3px);box-shadow:0 8px 25px #2563eb20}
+  .choice .choice-icon{font-size:4rem;display:block;margin-bottom:12px}
+  .choice strong{font-size:1.35rem;display:block;margin-bottom:8px}
+  .choice span{color:#667085;line-height:1.45}
+  .choice.easy-choice{border-color:#059669}
+  .choice.easy-choice:hover{border-color:#047857;box-shadow:0 8px 25px #05966920}
+  .start-note{margin-top:22px;font-size:.9rem;color:#667085}
+  .return-normal{display:none;margin-top:15px}
+  body.easy .return-normal{display:block}
+  @media(max-width:650px){
+    .choice-grid{grid-template-columns:1fr}
+    .start-box{padding:30px 18px}
+  }
+</style>
+</head>
+<body>
+
+<!-- PANTALLA INICIAL -->
+<div id="startScreen">
+  <div class="start-box">
+    <div class="start-logo">🤝 AyudaCerca</div>
+    <h1>Antes de entrar...</h1>
+    <p>
+      Queremos adaptar la web a cada persona. Elige la opción que mejor
+      describe cómo quieres utilizar AyudaCerca.
+    </p>
+
+    <div class="choice-grid">
+      <button class="choice" onclick="enterNormal()">
+        <span class="choice-icon">💻</span>
+        <strong>Sé utilizar la tecnología</strong>
+        <span>Quiero entrar en la versión completa de AyudaCerca.</span>
+      </button>
+
+      <button class="choice easy-choice" onclick="enterEasy()">
+        <span class="choice-icon">👵</span>
+        <strong>Necesito una versión sencilla</strong>
+        <span>No tengo mucha experiencia con móviles o aplicaciones y quiero botones grandes y pocas opciones.</span>
+      </button>
+    </div>
+
+    <div class="start-note">
+      No hay una respuesta correcta. Elige la versión que te resulte más cómoda.
+    </div>
+  </div>
+</div>
+
+
+<header>
+  <div class="logo">🤝 AyudaCerca</div>
+  <nav>
+    <button onclick="go('ayudas')">Ayudas</button>
+    <button onclick="go('aprende')">Aprende</button>
+    <button onclick="openModal('profileModal')">Mi perfil</button>
+    <button class="easy-toggle" onclick="toggleEasy()">👵 Modo fácil</button>
+  </nav>
+</header>
+
+<!-- INICIO SIMPLIFICADO -->
+<section id="easyHome" class="hidden" style="position:fixed;inset:0;z-index:900;background:#f4f7fb;overflow:auto;">
+  <div style="max-width:900px;margin:auto;padding:30px 20px 60px;">
+    <div class="card" style="padding:34px;text-align:center;">
+      <div style="font-size:3.5rem;">👋</div>
+      <h1 style="font-size:clamp(2.2rem,6vw,3.4rem);margin:10px 0;">Hola, ¿qué necesitas?</h1>
+      <p class="muted" style="font-size:1.2rem;">No hace falta saber utilizar la tecnología. Pulsa una de estas opciones.</p>
+      <div class="grid" style="margin-top:25px;">
+        <button class="btn green big-btn" onclick="openModal('helpModal');hideEasyHome()">🆘<br>Necesito ayuda</button>
+        <button class="btn primary big-btn" onclick="openModal('voiceModal');hideEasyHome()">🎤<br>Quiero hablar</button>
+        <button class="btn soft big-btn" onclick="openModal('learnModal');hideEasyHome()">📚<br>Quiero aprender</button>
+        <button class="btn" style="background:#fef3c7;color:#92400e" onclick="openModal('phoneModal');hideEasyHome()">☎️<br>Quiero llamar</button>
+        <button class="btn" style="background:#ecfdf5;color:#047857" onclick="openModal('pointModal');hideEasyHome()">🏢<br>Buscar un lugar donde ayudarme</button>
+      </div>
+      <button class="btn secondary" style="margin-top:24px" onclick="leaveEasyMode()">Volver a la versión normal</button>
+    </div>
+  </div>
+</section>
+
+
+<main>
+  <section class="hero">
+    <h1>Ayudar está más cerca.</h1>
+    <p>
+      AyudaCerca conecta a personas que necesitan pequeñas ayudas con personas
+      dispuestas a ayudar. Y si no sabes utilizar la tecnología, también puedes
+      pedir ayuda por voz, teléfono o en un Punto AyudaCerca.
+    </p>
+    <div class="buttons">
+      <button class="btn primary big-btn" onclick="openModal('helpModal')">🆘 Necesito ayuda</button>
+      <button class="btn green big-btn" onclick="go('ayudas')">🤝 Quiero ayudar</button>
+      <button class="btn soft big-btn" onclick="openModal('learnModal')">📚 Quiero aprender</button>
+    </div>
+  </section>
+
+  <section class="section access">
+    <h2>♿ Diseñada para que nadie se quede fuera</h2>
+    <p class="muted">No es necesario saber utilizar una aplicación para acceder a AyudaCerca.</p>
+    <div class="access-grid">
+      <div class="access-card">
+        <div class="icon">☎️</div>
+        <h3>Por teléfono</h3>
+        <p>Llama a AyudaCerca y una persona registra la petición por ti.</p>
+        <button class="btn green" onclick="openModal('phoneModal')">Ver cómo funciona</button>
+      </div>
+      <div class="access-card">
+        <div class="icon">🎤</div>
+        <h3>Por voz</h3>
+        <p>Pulsa un botón y explica con tus palabras qué necesitas.</p>
+        <button class="btn primary" onclick="openModal('voiceModal')">Probar voz</button>
+      </div>
+      <div class="access-card">
+        <div class="icon">🏢</div>
+        <h3>Punto AyudaCerca</h3>
+        <p>Un voluntario puede ayudarte presencialmente en un centro cercano.</p>
+        <button class="btn soft" onclick="openModal('pointModal')">Buscar punto</button>
+      </div>
+      <div class="access-card">
+        <div class="icon">👨‍👩‍👧</div>
+        <h3>Un familiar</h3>
+        <p>Un hijo, nieto o persona de confianza puede registrar la petición.</p>
+        <button class="btn soft" onclick="openModal('helpModal')">Registrar ayuda</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="ayudas" class="section">
+    <h2>🤝 Ayudas cerca de ti</h2>
+    <p>Ejemplos de peticiones que podría recibir la plataforma.</p>
+    <div class="grid" id="helpList">
+      <article class="card help-card">
+        <div class="help-top"><div><span class="icon">📱</span><h3>Aprender a usar WhatsApp</h3></div><span class="points">+1 ⭐</span></div>
+        <p class="muted">Carmen necesita aprender a enviar mensajes y hacer videollamadas.</p>
+        <span class="tag">Tecnología · 500 m</span>
+        <button class="btn primary" onclick="acceptHelp(this)">Quiero ayudar</button>
+      </article>
+      <article class="card help-card">
+        <div class="help-top"><div><span class="icon">🏦</span><h3>Aprender un trámite online</h3></div><span class="points">+1 ⭐</span></div>
+        <p class="muted">Una persona necesita aprender a realizar un trámite por Internet.</p>
+        <span class="tag">Internet · 800 m</span>
+        <button class="btn primary" onclick="acceptHelp(this)">Quiero ayudar</button>
+      </article>
+      <article class="card help-card">
+        <div class="help-top"><div><span class="icon">🛒</span><h3>Ayuda para hacer la compra</h3></div><span class="points">+2 ⭐</span></div>
+        <p class="muted">Una persona necesita ayuda para llevar unas bolsas a casa.</p>
+        <span class="tag">Recados · 1 km</span>
+        <button class="btn primary" onclick="acceptHelp(this)">Quiero ayudar</button>
+      </article>
+    </div>
+  </section>
+
+  <section id="aprende" class="section">
+    <h2>📚 Aprende a utilizar la tecnología</h2>
+    <p>La meta no es hacer las cosas por la persona, sino enseñarle para que pueda hacerlas sola.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">📱</div><h3>WhatsApp</h3>
+        <p class="muted">Mensajes, fotos, contactos y videollamadas.</p>
+        <button class="btn soft" onclick="openTutorial('whatsapp')">Ver tutorial</button>
+      </div>
+      <div class="card">
+        <div class="icon">🔐</div><h3>Seguridad</h3>
+        <p class="muted">Reconocer mensajes sospechosos y proteger contraseñas.</p>
+        <button class="btn soft" onclick="openTutorial('security')">Ver tutorial</button>
+      </div>
+      <div class="card">
+        <div class="icon">🌐</div><h3>Internet</h3>
+        <p class="muted">Buscar información y realizar trámites básicos.</p>
+        <button class="btn soft" onclick="openTutorial('internet')">Ver tutorial</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>⭐ Mi impacto</h2>
+    <div class="grid">
+      <div class="stat"><strong id="points">12</strong>Puntos</div>
+      <div class="stat"><strong id="helps">8</strong>Ayudas realizadas</div>
+      <div class="stat"><strong id="hours">12</strong>Horas ayudando</div>
+    </div>
+  </section>
+</main>
+
+<footer>AyudaCerca · Prototipo educativo de 4º ESO</footer>
+
+<!-- PEDIR AYUDA -->
+<div class="modal" id="helpModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>🆘 Pedir ayuda</h2><button class="close" onclick="closeModal('helpModal')">✕</button></div>
+    <p class="muted">Puedes rellenarlo tú, un familiar o un voluntario.</p>
+    <form id="helpForm">
+      <label>¿Qué necesitas?</label><input id="title" required placeholder="Ej. Necesito aprender a usar WhatsApp">
+      <label>Categoría</label>
+      <select id="category"><option>Tecnología</option><option>Estudios</option><option>Recados</option><option>Personas mayores</option><option>Animales</option><option>Otra</option></select>
+      <label>Cuéntanos qué necesitas</label><textarea id="description" required placeholder="Explícalo con tus palabras..."></textarea>
+      <label>¿Cuándo?</label><input id="date" type="datetime-local" required>
+      <label>¿Dónde?</label><input id="place" required placeholder="Ej. Centro de mayores">
+      <button class="btn primary" type="submit" style="width:100%;margin-top:18px">Publicar petición</button>
+      <div class="notice" id="formNotice">✓ Petición publicada correctamente.</div>
+    </form>
+  </div>
+</div>
+
+<!-- VOZ -->
+<div class="modal" id="voiceModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>🎤 Pedir ayuda por voz</h2><button class="close" onclick="closeModal('voiceModal')">✕</button></div>
+    <p class="muted">En un producto real, esta función convertiría tu voz en una petición. En este prototipo simulamos el proceso.</p>
+    <div class="voice-box">
+      <span class="mic">🎙️</span>
+      <div class="buttons"><button class="btn primary big-btn" onclick="simulateVoice()">Mantener pulsado para hablar</button></div>
+      <div class="voice-result" id="voiceResult">Pulsa el botón y di, por ejemplo: “Necesito ayuda para aprender a hacer una videollamada”.</div>
+    </div>
+  </div>
+</div>
+
+<!-- TELEFONO -->
+<div class="modal" id="phoneModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>☎️ Ayuda por teléfono</h2><button class="close" onclick="closeModal('phoneModal')">✕</button></div>
+    <div class="card" style="box-shadow:none;background:#f8fafc">
+      <div class="icon">☎️</div>
+      <h3>900 XXX XXX</h3>
+      <p class="muted">La persona explica qué necesita. Un operador o voluntario registra la petición en AyudaCerca y busca una persona que pueda ayudar.</p>
+      <p><strong>Ventaja:</strong> no hace falta utilizar un móvil inteligente ni saber navegar por Internet.</p>
+    </div>
+    <button class="btn green" style="width:100%" onclick="alert('En un proyecto real este botón llamaría al número de AyudaCerca.')">Simular llamada</button>
+  </div>
+</div>
+
+<!-- PUNTO FISICO -->
+<div class="modal" id="pointModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>🏢 Puntos AyudaCerca</h2><button class="close" onclick="closeModal('pointModal')">✕</button></div>
+    <p class="muted">Lugares donde una persona puede acudir para pedir ayuda presencialmente.</p>
+    <div class="tutorial"><strong>📚 Biblioteca del barrio</strong><br>Martes y jueves · 17:00–19:00</div>
+    <div class="tutorial"><strong>🏢 Centro de mayores</strong><br>Lunes y miércoles · 10:00–12:00</div>
+    <div class="tutorial"><strong>🏫 Instituto colaborador</strong><br>Viernes · 16:00–18:00</div>
+  </div>
+</div>
+
+<!-- TUTORIAL -->
+<div class="modal" id="learnModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>📚 Quiero aprender</h2><button class="close" onclick="closeModal('learnModal')">✕</button></div>
+    <p class="muted">Elige algo que quieras aprender.</p>
+    <button class="btn soft" style="width:100%;margin:5px 0" onclick="openTutorial('whatsapp')">📱 Aprender WhatsApp</button>
+    <button class="btn soft" style="width:100%;margin:5px 0" onclick="openTutorial('internet')">🌐 Aprender Internet</button>
+    <button class="btn soft" style="width:100%;margin:5px 0" onclick="openTutorial('security')">🔐 Aprender seguridad</button>
+  </div>
+</div>
+
+<div class="modal" id="tutorialModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2 id="tutorialTitle">Tutorial</h2><button class="close" onclick="closeModal('tutorialModal')">✕</button></div>
+    <div id="tutorialContent"></div>
+  </div>
+</div>
+
+<!-- PERFIL -->
+<div class="modal" id="profileModal">
+  <div class="modal-box">
+    <div class="modal-head"><h2>👤 Mi perfil</h2><button class="close" onclick="closeModal('profileModal')">✕</button></div>
+    <h3>Hola, Carlos 👋</h3>
+    <div class="grid">
+      <div class="stat"><strong id="profilePoints">12</strong>Puntos</div>
+      <div class="stat"><strong id="profileHelps">8</strong>Ayudas</div>
+      <div class="stat"><strong>4.9 ⭐</strong>Valoración</div>
+    </div>
+    <h3 style="margin-top:25px">🎯 Progreso digital</h3>
+    <p>WhatsApp</p><div class="progress"><div class="bar" style="width:80%"></div></div>
+    <p>Internet</p><div class="progress"><div class="bar" style="width:60%"></div></div>
+    <p>Seguridad</p><div class="progress"><div class="bar" style="width:35%"></div></div>
+  </div>
+</div>
+
+<script>
+let points=12, helps=8, hours=12;
+
+
+function enterNormal(){
+  document.getElementById('startScreen').classList.add('hidden');
+  document.body.classList.remove('easy');
+  document.getElementById('easyHome').classList.add('hidden');
+}
+function enterEasy(){
+  document.getElementById('startScreen').classList.add('hidden');
+  document.body.classList.add('easy');
+  document.getElementById('easyHome').classList.remove('hidden');
+}
+function hideEasyHome(){
+  document.getElementById('easyHome').classList.add('hidden');
+}
+function leaveEasyMode(){
+  document.body.classList.remove('easy');
+  document.getElementById('easyHome').classList.add('hidden');
+}
+
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+function go(id){document.getElementById(id).scrollIntoView({behavior:'smooth'})}
+
+function toggleEasy(){
+  const on=!document.body.classList.contains('easy');
+  document.body.classList.toggle('easy', on);
+  if(on){
+    document.getElementById('easyHome').classList.remove('hidden');
+    window.scrollTo(0,0);
+  } else {
+    document.getElementById('easyHome').classList.add('hidden');
+  }
+}
+
+function acceptHelp(button){
+  points++; helps++; hours++;
+  updateStats();
+  button.textContent='✓ Te has apuntado';
+  button.disabled=true; button.classList.remove('primary'); button.classList.add('soft');
+}
+
+function updateStats(){
+  document.getElementById('points').textContent=points;
+  document.getElementById('helps').textContent=helps;
+  document.getElementById('hours').textContent=hours;
+  document.getElementById('profilePoints').textContent=points;
+  document.getElementById('profileHelps').textContent=helps;
+}
+
+document.getElementById('helpForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const title=escapeHTML(document.getElementById('title').value);
+  const cat=escapeHTML(document.getElementById('category').value);
+  const desc=escapeHTML(document.getElementById('description').value);
+  const place=escapeHTML(document.getElementById('place').value);
+  const article=document.createElement('article');
+  article.className='card help-card';
+  article.innerHTML=`<div class="help-top"><div><span class="icon">🆕</span><h3>${title}</h3></div><span class="points">+1 ⭐</span></div>
+  <p class="muted">${desc}</p><span class="tag">${cat} · ${place}</span>
+  <button class="btn primary" onclick="acceptHelp(this)">Quiero ayudar</button>`;
+  document.getElementById('helpList').prepend(article);
+  document.getElementById('helpForm').reset();
+  document.getElementById('formNotice').classList.add('show');
+  setTimeout(()=>{closeModal('helpModal');document.getElementById('formNotice').classList.remove('show')},1000);
+});
+
+function simulateVoice(){
+  const r=document.getElementById('voiceResult');
+  r.innerHTML='🎤 Escuchando...';
+  setTimeout(()=>{
+    r.innerHTML='<strong>Has dicho:</strong> “Necesito ayuda para aprender a hacer una videollamada.”<br><br>✓ Hemos entendido tu petición. En la versión real se publicaría automáticamente.';
+  },1200);
+}
+
+function openTutorial(type){
+  closeModal('learnModal');
+  const data={
+    whatsapp:{
+      title:'📱 Aprender WhatsApp',
+      text:`<div class="tutorial"><strong>1. Abrir WhatsApp</strong><br>Busca el icono verde y púlsalo.</div>
+      <div class="tutorial"><strong>2. Enviar un mensaje</strong><br>Elige un contacto, escribe el mensaje y pulsa enviar.</div>
+      <div class="tutorial"><strong>3. Hacer una videollamada</strong><br>Abre un contacto y pulsa el icono de cámara.</div>`
+    },
+    security:{
+      title:'🔐 Seguridad en Internet',
+      text:`<div class="tutorial"><strong>1. No compartas contraseñas</strong><br>Nunca las envíes por WhatsApp, SMS o correo.</div>
+      <div class="tutorial"><strong>2. Desconfía de mensajes urgentes</strong><br>Si alguien te pide dinero o datos rápidamente, comprueba primero quién es.</div>
+      <div class="tutorial"><strong>3. Pregunta</strong><br>Si algo parece extraño, pide ayuda antes de pulsar un enlace.</div>`
+    },
+    internet:{
+      title:'🌐 Aprender Internet',
+      text:`<div class="tutorial"><strong>1. Buscar</strong><br>Escribe lo que necesitas en un buscador.</div>
+      <div class="tutorial"><strong>2. Comprobar</strong><br>Antes de introducir datos, comprueba que estás en la página oficial.</div>
+      <div class="tutorial"><strong>3. Pedir ayuda</strong><br>Si no estás seguro, utiliza un Punto AyudaCerca.</div>`
+    }
+  };
+  document.getElementById('tutorialTitle').textContent=data[type].title;
+  document.getElementById('tutorialContent').innerHTML=data[type].text;
+  openModal('tutorialModal');
+}
+
+function escapeHTML(text){
+  const d=document.createElement('div'); d.textContent=text; return d.innerHTML;
+}
+
+window.addEventListener('click',e=>{
+  document.querySelectorAll('.modal').forEach(m=>{if(e.target===m)m.classList.remove('show')});
+});
+</script>
+</body>
+</html>
